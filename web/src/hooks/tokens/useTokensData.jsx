@@ -92,6 +92,9 @@ export const useTokensData = (openFluentNotification, openCCSwitchModal) => {
     setActivePage(payload.page || 1);
     setPageSize(payload.page_size || pageSize);
     setShowKeys({});
+    setResolvedTokenKeys({});
+    setLoadingTokenKeys({});
+    keyRequestsRef.current = {};
   };
 
   // Load tokens function
@@ -131,6 +134,8 @@ export const useTokensData = (openFluentNotification, openCCSwitchModal) => {
     const { suppressError = false } = options;
     const tokenId =
       typeof tokenOrId === 'object' ? tokenOrId?.id : Number(tokenOrId);
+    const fallbackKey =
+      typeof tokenOrId === 'object' ? tokenOrId?.key || '' : '';
 
     if (!tokenId) {
       const error = new Error(t('令牌不存在'));
@@ -151,7 +156,7 @@ export const useTokensData = (openFluentNotification, openCCSwitchModal) => {
     const request = (async () => {
       setLoadingTokenKeys((prev) => ({ ...prev, [tokenId]: true }));
       try {
-        const fullKey = await fetchTokenKeyById(tokenId);
+        const fullKey = await fetchTokenKeyById(tokenId, fallbackKey);
         setResolvedTokenKeys((prev) => ({ ...prev, [tokenId]: fullKey }));
         return fullKey;
       } catch (error) {
@@ -283,8 +288,7 @@ export const useTokensData = (openFluentNotification, openCCSwitchModal) => {
   // Search tokens function
   const searchTokens = async (page = 1, size = pageSize) => {
     const normalizedPage = Number.isInteger(page) && page > 0 ? page : 1;
-    const normalizedSize =
-      Number.isInteger(size) && size > 0 ? size : pageSize;
+    const normalizedSize = Number.isInteger(size) && size > 0 ? size : pageSize;
 
     const { searchKeyword, searchToken } = getFormValues();
     if (searchKeyword === '' && searchToken === '') {
@@ -398,7 +402,9 @@ export const useTokensData = (openFluentNotification, openCCSwitchModal) => {
     }
     try {
       const keys = await Promise.all(
-        selectedKeys.map((token) => fetchTokenKey(token, { suppressError: true })),
+        selectedKeys.map((token) =>
+          fetchTokenKey(token, { suppressError: true }),
+        ),
       );
       let content = '';
       for (let i = 0; i < selectedKeys.length; i++) {

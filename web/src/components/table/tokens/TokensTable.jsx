@@ -95,6 +95,7 @@ const TokensTable = (tokensData) => {
 
   return (
     <CardTable
+      rowKey='id'
       columns={tableColumns}
       dataSource={tokens}
       scroll={compactMode ? undefined : { x: 'max-content' }}

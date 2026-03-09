@@ -19,18 +19,50 @@ For commercial licensing, please contact support@quantumnous.com
 
 import { API } from './api';
 
+function normalizeTokenKey(rawKey) {
+  if (typeof rawKey !== 'string') {
+    return '';
+  }
+
+  const trimmedKey = rawKey.trim();
+  if (!trimmedKey) {
+    return '';
+  }
+
+  return trimmedKey.startsWith('sk-') ? trimmedKey.slice(3) : trimmedKey;
+}
+
+function isMaskedTokenKey(tokenKey) {
+  return tokenKey.includes('*');
+}
+
 /**
  * 按需获取单个令牌的真实 key
  * @param {number|string} tokenId
+ * @param {string} fallbackKey 可选的本地 key，用于兼容旧接口或回退
  * @returns {Promise<string>} 返回不带 sk- 前缀的真实 token key
  */
-export async function fetchTokenKey(tokenId) {
+export async function fetchTokenKey(tokenId, fallbackKey = '') {
   const response = await API.post(`/api/token/${tokenId}/key`);
   const { success, data, message } = response.data || {};
-  if (!success || !data?.key) {
+
+  const keyCandidates = [
+    data?.key,
+    data?.token,
+    data?.full_key,
+    typeof data === 'string' ? data : '',
+    fallbackKey,
+  ]
+    .map(normalizeTokenKey)
+    .filter(Boolean);
+
+  const fullKey = keyCandidates.find((key) => !isMaskedTokenKey(key));
+
+  if (!success || !fullKey) {
     throw new Error(message || 'Failed to fetch token key');
   }
-  return data.key;
+
+  return fullKey;
 }
 
 /**

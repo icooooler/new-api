@@ -108,6 +108,41 @@ const renderGroupColumn = (text, record, t) => {
 };
 
 // Render token key column with show/hide and copy functionality
+const normalizeTokenKey = (rawKey) => {
+  if (typeof rawKey !== 'string') {
+    return '';
+  }
+
+  const trimmedKey = rawKey.trim();
+  if (!trimmedKey) {
+    return '';
+  }
+
+  return trimmedKey.startsWith('sk-') ? trimmedKey.slice(3) : trimmedKey;
+};
+
+const isMaskedTokenKey = (tokenKey) => tokenKey.includes('*');
+
+const maskTokenKey = (tokenKey) => {
+  if (!tokenKey) {
+    return '';
+  }
+
+  if (isMaskedTokenKey(tokenKey)) {
+    return tokenKey;
+  }
+
+  if (tokenKey.length <= 4) {
+    return '*'.repeat(tokenKey.length);
+  }
+
+  if (tokenKey.length <= 8) {
+    return `${tokenKey.slice(0, 2)}****${tokenKey.slice(-2)}`;
+  }
+
+  return `${tokenKey.slice(0, 4)}**********${tokenKey.slice(-4)}`;
+};
+
 const renderTokenKey = (
   text,
   record,
@@ -119,10 +154,11 @@ const renderTokenKey = (
 ) => {
   const revealed = !!showKeys[record.id];
   const loading = !!loadingTokenKeys[record.id];
-  const keyValue =
-    revealed && resolvedTokenKeys[record.id]
-      ? resolvedTokenKeys[record.id]
-      : record.key || '';
+  const resolvedKey = normalizeTokenKey(resolvedTokenKeys[record.id]);
+  const rawRecordKey = normalizeTokenKey(record.key);
+  const keyValue = revealed
+    ? resolvedKey || rawRecordKey
+    : maskTokenKey(rawRecordKey);
   const displayedKey = keyValue ? `sk-${keyValue}` : '';
 
   return (
@@ -144,6 +180,7 @@ const renderTokenKey = (
                 e.stopPropagation();
                 await toggleTokenVisibility(record);
               }}
+              onMouseDown={(e) => e.preventDefault()}
             />
             <Button
               theme='borderless'
@@ -156,6 +193,7 @@ const renderTokenKey = (
                 e.stopPropagation();
                 await copyTokenKey(record);
               }}
+              onMouseDown={(e) => e.preventDefault()}
             />
           </div>
         }
