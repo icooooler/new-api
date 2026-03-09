@@ -51,12 +51,18 @@ export const useNavigation = (t, docsLink, headerNavModules) => {
       },
       ...(docsLink
         ? [
-            {
-              text: t('文档'),
-              itemKey: 'docs',
-              isExternal: true,
-              externalLink: docsLink,
-            },
+            docsLink.startsWith('/')
+              ? {
+                  text: t('文档'),
+                  itemKey: 'docs',
+                  to: docsLink,
+                }
+              : {
+                  text: t('文档'),
+                  itemKey: 'docs',
+                  isExternal: true,
+                  externalLink: docsLink,
+                },
           ]
         : []),
       {

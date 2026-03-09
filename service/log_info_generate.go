@@ -74,6 +74,9 @@ func GenerateTextOtherInfo(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, m
 	appendRequestPath(ctx, relayInfo, other)
 	appendRequestConversionChain(relayInfo, other)
 	appendBillingInfo(relayInfo, other)
+	if requestContent := ExtractRequestContentSummary(relayInfo); requestContent != "" {
+		other["request_content"] = requestContent
+	}
 	return other
 }
 

@@ -187,39 +187,39 @@ export function PreCode(props) {
   }, []);
 
   return (
-    <>
+    <div className='relative group my-6'>
       <pre
         ref={ref}
+        className='rounded-xl overflow-hidden shadow-sm'
         style={{
-          position: 'relative',
-          backgroundColor: 'var(--semi-color-fill-0)',
+          backgroundColor: '#0F172A',
           border: '1px solid var(--semi-color-border)',
-          borderRadius: '6px',
-          padding: '12px',
-          margin: '12px 0',
+          padding: '20px',
+          margin: '0',
           overflow: 'auto',
-          fontSize: '14px',
-          lineHeight: '1.4',
+          fontSize: '13px',
+          lineHeight: '1.6',
+          color: '#E2E8F0',
         }}
       >
         <div
           className='copy-code-button'
           style={{
             position: 'absolute',
-            top: '8px',
-            right: '8px',
+            top: '12px',
+            right: '12px',
             display: 'flex',
             gap: '4px',
             zIndex: 10,
             opacity: 0,
-            transition: 'opacity 0.2s ease',
+            transition: 'all 0.2s ease',
           }}
         >
           <Tooltip content={t('复制代码')}>
             <Button
               size='small'
               theme='borderless'
-              icon={<IconCopy />}
+              icon={<IconCopy style={{ color: '#94A3B8' }} />}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -235,14 +235,7 @@ export function PreCode(props) {
                   });
                 }
               }}
-              style={{
-                padding: '4px',
-                backgroundColor: 'var(--semi-color-bg-2)',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                border: '1px solid var(--semi-color-border)',
-                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-              }}
+              className='!bg-white/10 hover:!bg-white/20 !rounded-lg border border-white/10 shadow-lg backdrop-blur-sm'
             />
           </Tooltip>
         </div>
@@ -253,27 +246,31 @@ export function PreCode(props) {
       )}
       {htmlCode.length > 0 && (
         <div
+          className='mt-4 p-5 rounded-xl border border-dashed'
           style={{
-            border: '1px solid var(--semi-color-border)',
-            borderRadius: '8px',
-            padding: '16px',
-            margin: '12px 0',
+            borderColor: 'var(--semi-color-border)',
             backgroundColor: 'var(--semi-color-bg-1)',
           }}
         >
           <div
-            style={{
-              marginBottom: '8px',
-              fontSize: '12px',
-              color: 'var(--semi-color-text-2)',
-            }}
+            className='mb-3 text-[11px] font-bold uppercase tracking-widest opacity-40'
           >
-            HTML预览:
+            HTML Preview:
           </div>
           <SandboxedHtmlPreview code={htmlCode} />
         </div>
       )}
-    </>
+      <style>{`
+        .group:hover .copy-code-button {
+          opacity: 1 !important;
+        }
+        @media (max-width: 768px) {
+          .copy-code-button {
+            opacity: 1 !important;
+          }
+        }
+      `}</style>
+    </div>
   );
 }
 
@@ -299,16 +296,9 @@ function CustomCode(props) {
     if (showToggle && collapsed) {
       return (
         <div
-          style={{
-            position: 'absolute',
-            bottom: '8px',
-            right: '8px',
-            left: '8px',
-            display: 'flex',
-            justifyContent: 'center',
-          }}
+          className='absolute bottom-2 left-0 right-0 flex justify-center pb-2 bg-gradient-to-t from-[var(--semi-color-fill-0)] to-transparent'
         >
-          <Button size='small' onClick={toggleCollapsed} theme='solid'>
+          <Button size='small' onClick={toggleCollapsed} theme='solid' className='!rounded-full shadow-md'>
             {t('显示更多')}
           </Button>
         </div>
@@ -318,19 +308,21 @@ function CustomCode(props) {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div className='relative inline-block align-middle mx-1'>
       <code
-        className={clsx(props?.className)}
+        className={clsx(props?.className, 'font-mono')}
         ref={ref}
         style={{
           maxHeight: collapsed ? '400px' : 'none',
           overflowY: 'hidden',
-          display: 'block',
-          padding: '8px 12px',
+          display: 'inline-block',
+          padding: '2px 6px',
           backgroundColor: 'var(--semi-color-fill-0)',
-          borderRadius: '4px',
-          fontSize: '13px',
-          lineHeight: '1.4',
+          border: '1px solid var(--semi-color-border)',
+          borderRadius: '6px',
+          fontSize: '0.9em',
+          color: 'var(--semi-color-primary)',
+          fontWeight: '500',
         }}
       >
         {props.children}
@@ -469,10 +461,13 @@ function _MarkdownContent(props) {
           <h1
             {...props}
             style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              margin: '20px 0 12px 0',
+              fontSize: '28px',
+              fontWeight: '900',
+              margin: '40px 0 20px 0',
+              letterSpacing: '-0.025em',
               color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
+              borderBottom: '1px solid var(--semi-color-border)',
+              paddingBottom: '12px'
             }}
           />
         ),
@@ -480,9 +475,10 @@ function _MarkdownContent(props) {
           <h2
             {...props}
             style={{
-              fontSize: '20px',
-              fontWeight: 'bold',
-              margin: '18px 0 10px 0',
+              fontSize: '22px',
+              fontWeight: '800',
+              margin: '32px 0 16px 0',
+              letterSpacing: '-0.02em',
               color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
             }}
           />
@@ -492,8 +488,8 @@ function _MarkdownContent(props) {
             {...props}
             style={{
               fontSize: '18px',
-              fontWeight: 'bold',
-              margin: '16px 0 8px 0',
+              fontWeight: '700',
+              margin: '24px 0 12px 0',
               color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
             }}
           />
@@ -503,8 +499,8 @@ function _MarkdownContent(props) {
             {...props}
             style={{
               fontSize: '16px',
-              fontWeight: 'bold',
-              margin: '14px 0 6px 0',
+              fontWeight: '700',
+              margin: '20px 0 10px 0',
               color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
             }}
           />
@@ -514,7 +510,7 @@ function _MarkdownContent(props) {
             {...props}
             style={{
               fontSize: '14px',
-              fontWeight: 'bold',
+              fontWeight: '700',
               margin: '12px 0 4px 0',
               color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
             }}
@@ -525,7 +521,7 @@ function _MarkdownContent(props) {
             {...props}
             style={{
               fontSize: '13px',
-              fontWeight: 'bold',
+              fontWeight: '700',
               margin: '10px 0 4px 0',
               color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
             }}
@@ -534,28 +530,23 @@ function _MarkdownContent(props) {
         blockquote: (props) => (
           <blockquote
             {...props}
+            className='!border-l-4 !border-[var(--semi-color-primary)] !bg-[var(--semi-color-fill-0)] !rounded-r-xl shadow-sm'
             style={{
-              borderLeft: isUserMessage
-                ? '4px solid rgba(255, 255, 255, 0.5)'
-                : '4px solid var(--semi-color-primary)',
-              paddingLeft: '16px',
-              margin: '12px 0',
-              backgroundColor: isUserMessage
-                ? 'rgba(255, 255, 255, 0.1)'
-                : 'var(--semi-color-fill-0)',
-              padding: '8px 16px',
-              borderRadius: '0 4px 4px 0',
+              paddingLeft: '24px',
+              margin: '24px 0',
+              padding: '16px 24px',
               fontStyle: 'italic',
-              color: isUserMessage ? 'white' : 'inherit',
+              color: isUserMessage ? 'white' : 'var(--semi-color-text-2)',
             }}
           />
         ),
         ul: (props) => (
           <ul
             {...props}
+            className='list-disc'
             style={{
-              margin: '8px 0',
-              paddingLeft: '20px',
+              margin: '16px 0',
+              paddingLeft: '24px',
               color: isUserMessage ? 'white' : 'inherit',
             }}
           />
@@ -563,9 +554,10 @@ function _MarkdownContent(props) {
         ol: (props) => (
           <ol
             {...props}
+            className='list-decimal'
             style={{
-              margin: '8px 0',
-              paddingLeft: '20px',
+              margin: '16px 0',
+              paddingLeft: '24px',
               color: isUserMessage ? 'white' : 'inherit',
             }}
           />
@@ -574,24 +566,19 @@ function _MarkdownContent(props) {
           <li
             {...props}
             style={{
-              margin: '4px 0',
-              lineHeight: '1.6',
+              margin: '8px 0',
+              lineHeight: '1.7',
               color: isUserMessage ? 'white' : 'inherit',
             }}
           />
         ),
         table: (props) => (
-          <div style={{ overflow: 'auto', margin: '12px 0' }}>
+          <div className='my-8 overflow-hidden rounded-xl border border-[var(--semi-color-border)] shadow-sm'>
             <table
               {...props}
               style={{
                 width: '100%',
                 borderCollapse: 'collapse',
-                border: isUserMessage
-                  ? '1px solid rgba(255, 255, 255, 0.3)'
-                  : '1px solid var(--semi-color-border)',
-                borderRadius: '6px',
-                overflow: 'hidden',
               }}
             />
           </div>
@@ -599,17 +586,16 @@ function _MarkdownContent(props) {
         th: (props) => (
           <th
             {...props}
+            className='!bg-[var(--semi-color-fill-0)]'
             style={{
-              padding: '8px 12px',
-              backgroundColor: isUserMessage
-                ? 'rgba(255, 255, 255, 0.2)'
-                : 'var(--semi-color-fill-1)',
-              border: isUserMessage
-                ? '1px solid rgba(255, 255, 255, 0.3)'
-                : '1px solid var(--semi-color-border)',
+              padding: '12px 16px',
+              borderBottom: '1px solid var(--semi-color-border)',
               fontWeight: 'bold',
               textAlign: 'left',
-              color: isUserMessage ? 'white' : 'inherit',
+              fontSize: '13px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              color: isUserMessage ? 'white' : 'var(--semi-color-text-2)',
             }}
           />
         ),
@@ -617,10 +603,9 @@ function _MarkdownContent(props) {
           <td
             {...props}
             style={{
-              padding: '8px 12px',
-              border: isUserMessage
-                ? '1px solid rgba(255, 255, 255, 0.3)'
-                : '1px solid var(--semi-color-border)',
+              padding: '12px 16px',
+              borderBottom: '1px solid var(--semi-color-border)',
+              fontSize: '14px',
               color: isUserMessage ? 'white' : 'inherit',
             }}
           />

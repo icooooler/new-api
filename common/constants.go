@@ -73,6 +73,8 @@ var DebugEnabled bool
 var MemoryCacheEnabled bool
 
 var LogConsumeEnabled = true
+var LogContentEnabled = false  // 是否在使用日志中记录请求内容（仅管理员可见）
+var LogContentMaxLength = 500  // 请求内容最大记录字符数
 
 var TLSInsecureSkipVerify bool
 var InsecureTLSConfig = &tls.Config{InsecureSkipVerify: true}

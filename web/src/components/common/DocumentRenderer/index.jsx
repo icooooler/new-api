@@ -154,7 +154,7 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   if (loading) {
     return (
       <div className='flex justify-center items-center min-h-screen'>
-        <Spin size='large' />
+        <Spin size='large' tip={t('正在加载文档...')} />
       </div>
     );
   }
@@ -162,14 +162,14 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   // 如果没有内容，显示空状态
   if (!content || content.trim() === '') {
     return (
-      <div className='flex justify-center items-center min-h-screen bg-gray-50'>
+      <div className='flex justify-center items-center min-h-[60vh] bg-[var(--semi-color-bg-0)]'>
         <Empty
           title={t('管理员未设置' + title + '内容')}
           image={
-            <IllustrationConstruction style={{ width: 150, height: 150 }} />
+            <IllustrationConstruction style={{ width: 200, height: 200 }} />
           }
           darkModeImage={
-            <IllustrationConstructionDark style={{ width: 150, height: 150 }} />
+            <IllustrationConstructionDark style={{ width: 200, height: 200 }} />
           }
           className='p-8'
         />
@@ -180,73 +180,75 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   // 如果是 URL，显示链接卡片
   if (isUrl(content)) {
     return (
-      <div className='flex justify-center items-center min-h-screen bg-gray-50 p-4'>
-        <Card className='max-w-md w-full'>
-          <div className='text-center'>
-            <Title heading={4} className='mb-4'>
-              {title}
-            </Title>
-            <p className='text-gray-600 mb-4'>
-              {t('管理员设置了外部链接，点击下方按钮访问')}
-            </p>
-            <a
-              href={content.trim()}
-              target='_blank'
-              rel='noopener noreferrer'
-              title={content.trim()}
-              aria-label={`${t('访问' + title)}: ${content.trim()}`}
-              className='inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
-            >
-              {t('访问' + title)}
-            </a>
+      <div className='flex justify-center items-center min-h-[70vh] p-6 bg-[var(--semi-color-bg-0)]'>
+        <Card className='max-w-lg w-full !rounded-2xl shadow-xl border-none p-8 text-center bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950'>
+          <div className='w-16 h-16 bg-[var(--semi-color-primary-light-default)] text-[var(--semi-color-primary)] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner'>
+            <IconInfoCircle size='extra-large' />
+          </div>
+          <Title heading={3} className='mb-3 font-black tracking-tight'>
+            {title}
+          </Title>
+          <p className='text-[15px] leading-relaxed mb-8' style={{ color: 'var(--semi-color-text-2)' }}>
+            {t('此文档由外部链接托管，点击下方按钮前往查看最新内容。')}
+          </p>
+          <a
+            href={content.trim()}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='inline-flex items-center justify-center gap-2 w-full py-4 bg-[var(--semi-color-primary)] text-white font-bold rounded-xl hover:opacity-90 transition-all shadow-lg hover:shadow-xl active:scale-[0.98]'
+          >
+            {t('立即访问')}
+            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='top-right' /></svg>
+          </a>
+          <div className='mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 text-[12px] opacity-40 font-mono truncate'>
+             {content.trim()}
           </div>
         </Card>
       </div>
     );
   }
 
-  // 如果是 HTML 内容，直接渲染
-  if (isHtmlContent(content)) {
-    const { content: htmlContent, styles } = sanitizeHtml(content);
-
-    // 设置样式（如果有的话）
-    useEffect(() => {
-      if (styles && styles !== htmlStyles) {
-        setHtmlStyles(styles);
-      }
-    }, [content, styles, htmlStyles]);
-
-    return (
-      <div className='min-h-screen bg-gray-50'>
-        <div className='max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>
-          <div className='bg-white rounded-lg shadow-sm p-8'>
-            <Title heading={2} className='text-center mb-8'>
-              {title}
-            </Title>
-            <div
-              className='prose prose-lg max-w-none'
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
-            />
+  // 统一的渲染容器
+  const RenderContainer = ({ children }) => (
+    <div className='min-h-screen bg-[var(--semi-color-bg-0)] py-12 md:py-20'>
+      <div className='max-w-5xl mx-auto px-4 sm:px-8'>
+        <div className='bg-[var(--semi-color-bg-0)] rounded-3xl border border-[var(--semi-color-border)] p-6 md:p-12 shadow-sm transition-shadow hover:shadow-md'>
+          <div className='mb-12 text-center'>
+             <div className='inline-block px-3 py-1 rounded-full bg-[var(--semi-color-primary-light-default)] text-[var(--semi-color-primary)] text-[11px] font-bold mb-4 uppercase tracking-widest'>
+                Official Document
+             </div>
+             <Title heading={1} className='!text-3xl md:!text-4xl font-black tracking-tight m-0'>
+               {title}
+             </Title>
+             <div className='w-12 h-1 bg-[var(--semi-color-primary)] mx-auto mt-6 rounded-full' />
+          </div>
+          <div className='prose prose-slate dark:prose-invert max-w-none'>
+            {children}
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  // 如果是 HTML 内容，直接渲染
+  if (isHtmlContent(content)) {
+    const { content: htmlContent } = sanitizeHtml(content);
+
+    return (
+      <RenderContainer>
+        <div
+          className='prose prose-lg max-w-none'
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+        />
+      </RenderContainer>
     );
   }
 
   // 其他内容统一使用 Markdown 渲染器
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <div className='max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>
-        <div className='bg-white rounded-lg shadow-sm p-8'>
-          <Title heading={2} className='text-center mb-8'>
-            {title}
-          </Title>
-          <div className='prose prose-lg max-w-none'>
-            <MarkdownRenderer content={content} />
-          </div>
-        </div>
-      </div>
-    </div>
+    <RenderContainer>
+      <MarkdownRenderer content={content} />
+    </RenderContainer>
   );
 };
 

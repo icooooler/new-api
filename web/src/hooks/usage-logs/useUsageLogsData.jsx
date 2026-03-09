@@ -456,6 +456,16 @@ export const useLogsData = () => {
             value: other.reject_reason,
           });
         }
+        if (isAdminUser && other?.request_content) {
+          expandDataLocal.push({
+            key: t('请求内容'),
+            value: (
+              <span style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', maxWidth: '600px', display: 'block' }}>
+                {other.request_content}
+              </span>
+            ),
+          });
+        }
       }
       if (logs[i].type === 2) {
         let modelMapped =

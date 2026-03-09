@@ -46,6 +46,7 @@ export default function SettingsLog(props) {
   const [loadingCleanHistoryLog, setLoadingCleanHistoryLog] = useState(false);
   const [inputs, setInputs] = useState({
     LogConsumeEnabled: false,
+    LogContentEnabled: false,
     historyTimestamp: dayjs().subtract(1, 'month').toDate(),
   });
   const refForm = useRef();
@@ -215,6 +216,28 @@ export default function SettingsLog(props) {
                     });
                   }}
                 />
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={8} xl={8}>
+                <Form.Switch
+                  field={'LogContentEnabled'}
+                  label={t('启用请求内容日志记录')}
+                  size='default'
+                  checkedText='｜'
+                  uncheckedText='〇'
+                  onChange={(value) => {
+                    setInputs({
+                      ...inputs,
+                      LogContentEnabled: value,
+                    });
+                  }}
+                />
+                <Text
+                  type='tertiary'
+                  size='small'
+                  style={{ display: 'block', marginTop: 4, marginBottom: 8 }}
+                >
+                  {t('启用后将在使用日志中记录请求内容（仅管理员可见）')}
+                </Text>
               </Col>
               <Col xs={24} sm={12} md={8} lg={8} xl={8}>
                 <Spin spinning={loadingCleanHistoryLog}>
